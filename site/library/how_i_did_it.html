@@ -1,0 +1,148 @@
+<!-- Richard White's simple one-page website. -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>SolarServer Library</title>
+        <meta name="description" content="Site description">
+        <link rel="stylesheet" href="../styles.css">
+    </head>
+    <body>
+        <header id="home">
+            <h1>How I Did It</h1>
+            <h2>Building the Solar-Server Library</h2>
+        </header>
+        
+        <nav>
+            <a href="#home">Intro</a>
+            <a href="#hardware">Hardware</a>
+            <a href="#software">Software</a>
+            <a href="#references">References</a>
+        </nav>
+        
+        <main>
+            <section id="intro">
+            <h1>Intro</h1>
+                <p>This project began with the idea of running a Raspberry Pi 4 server out of my home, powered solely by a solar panel. I already knew a little about running a Raspberry Pi, and knew how to set up a server on there. I'd never played with solar power, however, and knew that things could get complicated. Some online research led to some helpful references, and a quick shopping trip to Amazon got me just about everything I needed.</p>
+                <p>In the end, I had a small Raspberry Pi unit running on a 12-volt battery with a solar power panel to keep the battery charged. The Pi unit itself, rather than serving webpages over the Internet, acts as a local Access Point, serving up just one small website to anyone who logs into its wifi signal. The intention is that it acts as a Little Free Library, where people can come along and download free books or music.</p>
+                <p>This short guide is not going to cover every detail that you need to get the server up and running, but it will cover most of the important points.</p>
+                <p>This is a great little project&mdash;you should try it!</p>
+            </section>
+            
+            <section id="hardware">
+                <h1>Hardware</h1>
+                <p>For this project you'll need the following items:</p>
+                <ul>
+                    <li><a href="https://www.adafruit.com/product/5291">Raspberry Pi Zero 2 W</a> ($15)</li>
+                    <li><a href="https://www.amazon.com/gp/product/B06XWN9Q99/?th=1">MicroSD card</a> (and card reader for computer)</li>
+                    <li>Various microUSB dongles, a 5-Volt, 2.5-Amp power supply, etc.</li>
+                    <li><a href="https://www.amazon.com/Topsolar-Monocrystalline-Maintainer-Controller-Adjustable/dp/B0CSCQKJ32?th=1">Solar Panel Kit & Charge Controller</a> (30W, 12V, $50)</li>
+                    <li><a href="https://www.amazon.com/Yuasa-NP7-12-Sealed-Battery-Terminal/dp/B00FA61Q1G">12-Volt Battery</a></li>
+                    <li><a href="https://www.amazon.com/Camco-55363-Standard-Battery-Box/dp/B00EOX2QJC?th=1">Battery Box</a></li>
+                </ul>
+                <p>You'll also need a computer (Mac or PC) to help you initialize the microSD card and to get everything up and running.</p>
+                <p>Buying the hardware is the easy part. Getting it all set up and running is where the <i>real</i> fun begins!</p>
+                <p><a href="#home">Back</a></p>
+            </section>
+            
+            <section id="software">
+                <h1>Software</h1>
+                <p>The following is a somewhat high-level overview of the steps involved in getting the hardware up and running. There may be details in here that it is assumed you are already familiar with. If you get stuck, reach out and I can help!</p>
+                <ol>
+                    <li>Assemble all materials in some place where you can work on them. Set aside a couple of hours if you've done this before, a couple of days if you haven't! :)</li>
+                    <li>With your laptop, download the <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager.app</a> and use it to install 32bit Raspbian Pi OS (Legacy, 32-bit) port of Debian Bullseye for installation on the microSD card. As part of that installation, be sure to specify a userid (I used <code>zero</code>, a password (I used <code>i@mR3.14Zero2W</code>, the Wifi router name and accompanying wifi password that can be used for wifi access, as well as the <code>raspberrypi.local</code> name for access on a local network.</li>
+                    <li>Once the microSD card has been   initialized, remove it from the laptop and plug it into the Raspberry Pi Zero 2 W. Then plug in the power supply to the the RPi Zero 2 W so that it can boot up.</li>
+                    <li>Use <code>ssh</code> to log into the RPi using credentials you provided during setup. Run <code>sudo apt update && sudo apt upgrade</code> to get the latest updates to the OS.</li>
+                    <li>Install Apache2 so that you'll be able to serve up a webpage from the RPi.
+                        <pre>$ sudo apt-get install apache2 -y
+$ cd /var/www/</pre>
+                        Now change owner of files in directory so we can access them.
+                        <pre>$ sudo chown -R zero: html </pre>
+                        Test to see if Apache installed by opening a browser and going to <code>http://raspberrypi.local</code>
+                        You should get the Apache test page.</li>
+                    <li>Install Required Packages:<br />
+                        You'll need to install <code>hostapd</code> for the access point, <code>dnsmasq</code> for DHCP and DNS services, and <code>netfilter-persistent</code> and <code>iptables-persistent</code> for managing network rules.
+                        <pre>sudo apt install hostapd dnsmasq netfilter-persistent iptables-persistent</pre></li>
+                    <li>Configure a Static IP for the Wireless Interface<br />
+                        Edit the <code>dhcpcd</code> configuration file to set a static IP for the wireless interface (<code>wlan0</code>).
+                        <pre>sudo nano /etc/dhcpcd.conf</pre>
+                        Add the following lines to the end of the file:
+                        <pre>interface wlan0
+static ip_address=192.168.4.1/24
+nohook wpa_supplicant</pre>
+                        This sets the Raspberry Pi’s WiFi to use the static IP <code>192.168.4.1</code>.</li>
+                    <li>Configure <code>hostapd</code><br />
+                        Create and edit the `hostapd` configuration file:
+                        <pre>sudo nano /etc/hostapd/hostapd.conf</pre>
+                        Add the following configuration:
+                        <pre>interface=wlan0
+driver=nl80211
+ssid=YourNetworkSSID
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=YourPassword
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP</pre>
+                        Replace <code>YourNetworkSSID</code> and <code>YourPassword</code> with your desired network name and password.</li>
+                    <li>
+                        Link this file to the main <code>hostapd</code> configuration:<br />
+                        <pre>sudo bash -c "echo 'DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"' >> /etc/default/hostapd"</pre>
+                    </li>
+                    <li>Configure <code>dnsmasq</code><br />
+                        Backup the original `dnsmasq` configuration:
+                        <pre>sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig</pre>
+                        Create a new configuration file:
+                        <pre>sudo nano /etc/dnsmasq.conf</pre>
+                        Add the following:
+                        <pre>interface=wlan0
+dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h</pre>
+                        This sets up DHCP for the network, assigning IPs from <code>192.168.4.2</code> to <code>192.168.4.20</code>.</li>
+                    <li>Enable IP Forwarding and Set NAT<br />
+                        Edit <code>sysctl.conf</code>:
+                        <pre>sudo nano /etc/sysctl.conf</pre>
+                        Uncomment the following line by removing the <code>#</code>:
+                        <pre>net.ipv4.ip_forward=1</pre>
+                    </li>
+                    <li>Add a NAT rule to allow outbound traffic:<br />
+                        <pre>sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo netfilter-persistent save</pre>
+                    </li>
+                    <li>Start Services<br />
+                        Enable and start the <code>hostapd</code> and <code>dnsmasq</code> services:
+                        <pre>sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+sudo systemctl start hostapd
+sudo systemctl restart dnsmasq</pre>
+                    </li>
+                    <li>Test the Configuration<br />
+                        At this point, your Raspberry Pi should be broadcasting a WiFi network as specified. Connect a device to this network using the SSID and password you set, and try accessing the web pages served by Apache via the Raspberry Pi's IP address (e.g., <code>http://192.168.4.1</code>).
+                    </li>
+                    
+                </ol>
+                <p><a href="#home">Back</a></p>
+            </section>
+            
+            <section id="references">
+                <h1>References</h1>
+                <ul>
+                    <li><a href="https://learn.adafruit.com/digital-free-library/">https://learn.adafruit.com/digital-free-library/</a></li>
+                    <li><a href="https://solar.lowtechmagazine.com/2023/12/how-to-build-a-small-solar-power-system/">https://solar.lowtechmagazine.com/2023/12/how-to-build-a-small-solar-power-system/</a></li>
+                </ul>
+                <p><a href="#home">Back</a></p>
+            </section>   
+            
+        </main>
+        
+        <footer>
+            <p>2024, Richard White. CC-BY-4.0. Thanks for stopping by!</p>
+        </footer>
+    </body>
+</html>

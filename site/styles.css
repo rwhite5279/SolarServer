@@ -1,0 +1,139 @@
+/* These styles are used for a minimal web page. Richard White */
+
+* { margin: 0; padding: 0; width: 100%; box-sizing: border-box; 
+    
+    /* Color scheme */
+      --textcolor: #121212;
+      --bgcolor: #fff;
+      --highlight: #00f;
+      --headerbg: #90A4AE;
+      --rollover: #f00;
+
+}
+
+body { 
+        font-size: 16px;
+        font-family: system-ui, sans-serif;
+        color: var(--textcolor);
+        background: var(--bgcolor);
+    }
+
+header {
+        text-align: center; 
+        overflow: auto;
+        width: 100%; 
+        padding: 1em 2em;
+        background: var(--headerbg);
+    }
+
+header h1, header h2, header h3, header h4 {
+        margin: 0;
+        }
+
+header a:link, header a:visited {
+        text-decoration: none; 
+        color: #000; 
+    }
+
+header a:hover, header a:active {
+        color: #ccc; 
+    }
+    
+nav 
+    { 
+        width: 100%; 
+        height: 2em;
+        padding: 1em auto;
+        border-top: solid 1px #fff;
+        text-align: center;
+        font-weight: bold;
+        overflow: hidden;
+        background: var(--headerbg);
+    }
+nav a:link, nav a:visited 
+    { 
+        margin: 0 2em;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 2em;
+        text-decoration: none; 
+        color: var(--highlight);
+        background: var(--headerbg);
+    }
+    
+nav a:hover, nav a:active 
+    { 
+        color: #fff;  
+    }   
+
+        
+main 
+    { 
+        overflow: auto; 
+        line-height: 1.5em;
+    }
+
+section
+    {
+        margin: 2em 0;
+        padding: 0 2em;
+    } 
+
+     
+h1, h2, h3, h4
+    {
+        margin: 1em 0;
+    }
+    
+p   {
+        margin: 0.5em 0;
+    }
+
+a:link, a:visited {
+    color: var(--highlight);
+}
+
+a:hover, a:active 
+{ 
+    color: var(--rollover); 
+}   
+
+    
+ul, ol {
+        padding: 0 2em;
+    }
+
+/* code blocks  */
+code {font-family: "Courier";
+      font-size: 1.1em; }
+    
+pre { font-family: "Courier";
+        margin: 0.5em;
+        border: solid 1px #ccc;
+        border-radius: 3px;
+        padding: 0.5em;
+        font-size: 1.2em;
+        background: #f3f6f9;
+        color: #000; 
+        overflow: auto;}
+
+footer
+    {
+        padding: 1em 2em;
+        text-align: center;
+        background: var(--headerbg);
+    }
+
+               
+img, video, audio {
+        width: 100%;
+        display: block;
+        height: auto;
+    }
+
+/* ------- Wider screens ------- */
+    
+@media (min-width: 850px) 
+{
+    
+}
