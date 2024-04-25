@@ -4,7 +4,9 @@ Describes a Raspberry Pi Zero 2 W-based digital "little free library" running of
 by Richard White
 2024-04-23
 
-# How I Did It: Building the Solar-Server Library
+![Assembled Solar Server](./solar_server-assembled.jpg)
+
+# Building the Solar-Server Library
 
 # Intro
 
@@ -169,6 +171,17 @@ Edit `sysctl.conf`:
 * Test the Configuration  
     At this point, your Raspberry Pi should be broadcasting a WiFi network as specified. Connect a device to this network using the SSID and password you set, and try accessing the web pages served by Apache via the Raspberry Pi's IP address (e.g., `http://192.168.4.1`).
 
+# Creating a simple webpage to run on the server
+
+The digitial "Little Free Library" website that runs on the server needs to be installed into the directory `/var/www/html` on the Raspberry Pi. A sample site is included as part of this project. You can upload it to the server from your computer using the `scp` command with the recursive flag ( `-r` ) set:
+
+```
+$ ssh zero@raspberrypi.local
+$ scp -r site/* zero@raspberrypi.local:/var/www/html/
+```
+
+![Image of SolarServer setup](./solar_server-connections.jpg)
+
 # Assembling the Components
 
 Once the Raspberry Pi has been set up with its software and tested, it only remains to connect that device to battery and solar power. The following order of connection is recommended based on documentation for the solar panel / controller.
@@ -182,7 +195,24 @@ Once the Raspberry Pi has been set up with its software and tested, it only rema
    2. Disconnect the solar cell from the controller.
    3. Disconnect the battery from the controller.
 
+Note that a ventilated battery box should be used to protect people from the battery itself, and to protect the battery from inadvertent contact with people or other conductors.
+
+Too, the solar controller and the Raspberry Pi itself should be protected from the elements (rain, direct sunlight), but should also be kept in a ventilated area--the Raspberry Pi can put off a fair amount of heat. It's tempting to considering putting the controller and Raspberry Pi could in the battery box along with the battery, but the possibility of short circuiting across the battery terminals is not worth the risk. A safer approach would be a separate ventilated container.
+
 It's possible to install switches for managing the solar and battery connections. It's also possible to program the RPi so that a switch connected to the General Purpose Input Output pins (GPIO) will run a script to initiate the shutdown process.
+
+# Accessing the server's website
+
+Once the server is up, it is running as a standalone access point. It is not connected to the Internet or any local networks. It is broadcasting its own wifi signal, and serving up its own webpages. To view those webpages:
+
+1. On your own computer (smartphone, laptop), look for wifi access points in the area. Select "YourNetworkSSID" (or whatever you set in the configuration file) and log in with the password you set ("YourPassword" in the example).
+2. In a web browser on your device, go to the URL `http://192.168.4.1`, or whatever you specified in the configuration. Note the use of `http`, not `https`. 
+
+The webpage that you've installed in the web server should come up in your browser.
+
+# Ancillary matereials
+
+A sample "Explanation Card" is provided in ODT-format for sharing as part of a public demonstration.
 
 # References
 
