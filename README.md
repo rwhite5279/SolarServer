@@ -169,6 +169,20 @@ Edit `sysctl.conf`:
 * Test the Configuration  
     At this point, your Raspberry Pi should be broadcasting a WiFi network as specified. Connect a device to this network using the SSID and password you set, and try accessing the web pages served by Apache via the Raspberry Pi's IP address (e.g., `http://192.168.4.1`).
 
+# Assembling the Components
+
+Once the Raspberry Pi has been set up with its software and tested, it only remains to connect that device to battery and solar power. The following order of connection is recommended based on documentation for the solar panel / controller.
+
+1. Connect the battery terminals to the solar controller.
+2. Connect the solar cell terminals to the solar controller.  
+3. Connect the Raspberry Pi, either to a USB out from the solar controller or the 12-Volt Load terminals connected to a step-down "buck" converter.  
+   The RPi will boot up and be available for access, both via SSH (zero@raspberrypi.local) and wifi (using the credentials configured above).
+4. To disconnect:
+   1. Connect to the RPi using SSH and issue a `sudo shutdown now` command. Wait a few moments until the green LED on the RPi has turned off.
+   2. Disconnect the solar cell from the controller.
+   3. Disconnect the battery from the controller.
+
+It's possible to install switches for managing the solar and battery connections. It's also possible to program the RPi so that a switch connected to the General Purpose Input Output pins (GPIO) will run a script to initiate the shutdown process.
 
 # References
 
