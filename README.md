@@ -210,7 +210,7 @@ Once the server is up, it is running as a standalone access point. It is not con
 
 The webpage that you've installed in the web server should come up in your browser.
 
-# Ancillary matereials
+# Ancillary materials
 
 A sample "Explanation Card" is provided in ODT-format for sharing as part of a public demonstration.
 
